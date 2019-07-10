@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# If you're changing an existing password, fill the variables as asked. If you're entering a firmware password for the first time, use only "new_password".
+
+Password=
+
+Firmware=$(sudo firmwarepasswd -check | grep "Password Enabled" | awk '{print $3}')
+
+if [ "$Firmware" == "Yes" ];
+  then
+    echo "Firmware previously enabled"
+    exit 0
+  else
+    expect -c "
+      log_user 0
+      spawn sudo firmwarepasswd -setpasswd
+      expect \"Setting Firmware Password\"
+      expect \"Enter new password:\"
+      send "$Password"\r
+      expect \"Re-enter new password:\"
+      send "$Password"\r
+      expect \"Password changed\"
+      expect \"NOTE: Must restart before changes will take effect\"
+      spawn firmwarepasswd -check
+      log_user 1
+      expect eof
+      "
+    echo 'Firmware Password Created'
+    exit 0
+fi
