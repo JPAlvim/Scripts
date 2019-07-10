@@ -1,0 +1,18 @@
+#!/bin/sh
+
+## Edit the variables accordingly
+
+Organization="99"
+Repo="Chile"
+BusinessUnit="Santiago"
+
+sudo defaults write /Library/Preferences/ManagedInstalls SoftwareRepoURL "http://mdm.seedstore.io/$Organization/$Repo/"
+sudo defaults write /Library/Preferences/ManagedInstalls PackageURL "http://mdm.seedstore.io/repo/$Organization/$Repo/pkgs"
+sudo defaults write /Library/Preferences/ManagedInstalls CatalogURL "http://mdm.seedstore.io/repo/$Organization/$Repo/catalogs"
+sudo defaults write /Library/Preferences/ManagedInstalls ManifestURL "http://mdm.seedstore.io/repo/$Organization/$Repo/manifests"
+sudo defaults write /Library/Preferences/ManagedInstalls IconURL "http://mdm.seedstore.io/repo/$Organization/$Repo/icons"
+sudo defaults write /Library/Preferences/ManagedInstalls ClientResourceURL "http://mdm.seedstore.io/repo/$Organization/$Repo/client_resources"
+
+sudo defaults write /Library/Preferences/MunkiReport Passphrase $BusinessUnit
+
+sudo /bin/bash -c "$(curl -s http://mdm.seedstore.io/index.php?/install)"
