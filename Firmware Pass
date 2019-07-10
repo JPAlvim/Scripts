@@ -2,7 +2,7 @@
 
 # If you're changing an existing password, fill the variables as asked. If you're entering a firmware password for the first time, use only "new_password".
 
-Password=
+Password=DesiredPassword
 
 Firmware=$(sudo firmwarepasswd -check | grep "Password Enabled" | awk '{print $3}')
 
