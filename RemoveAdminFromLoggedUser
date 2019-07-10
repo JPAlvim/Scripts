@@ -1,0 +1,7 @@
+#!/bin/sh
+
+#This simple script removes the admin permission from the logged user.
+curUser=$(/usr/bin/stat -f%Su /dev/console)
+
+#Change "-d" to "-a" in order to give admin privilege.
+sudo dseditgroup -o edit -d $curUser -t user admin
