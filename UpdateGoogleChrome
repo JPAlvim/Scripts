@@ -1,0 +1,109 @@
+#!/bin/bash
+
+## Setting variables.
+
+curUser=$(/usr/bin/stat -f%Su /dev/console)
+
+DOWNLOAD_URL="https://dl.google.com/chrome/mac/stable/GGRO/googlechrome.dmg"
+DMG_PATH="/tmp/Google Chrome.dmg"
+DMG_VOLUME_PATH="/Volumes/Google Chrome/"
+APP_NAME="Google Chrome.app"
+APP_PATH="/Applications/$APP_NAME"
+APP_PROCESS_NAME="Google Chrome"
+APP_INFO_PLIST="Contents/Info.plist"
+APP_VERSION_KEY="CFBundleShortVersionString"
+APP_PERMISSION_USER="root"
+APP_PERMISSION_GROUP="wheel"
+APP_DIRECTORY="/Applications/Google Chrome.app"
+
+## Downloading Chrome.
+curl --retry 3 -L "$DOWNLOAD_URL" -o "$DMG_PATH"
+hdiutil attach -nobrowse -quiet "$DMG_PATH"
+
+## Setting Version to be installed.
+TARGET_VERSION=$(defaults read "$DMG_VOLUME_PATH/$APP_NAME/$APP_INFO_PLIST" "$APP_VERSION_KEY")
+
+##Checking if Chrome is installed already.
+if [ ! -d "${APP_DIRECTORY}" ]; then
+    echo "${APP_DIRECTORY} does not exist!"
+    exit 0
+fi
+
+## No idea what this does.
+
+vercomp () {
+    if [[ $1 == $2 ]]
+    then
+        return 0
+    fi
+
+    local IFS=.
+    local i ver1=($1) ver2=($2)
+    # fill empty fields in ver1 with zeros
+    for ((i=${#ver1[@]}; i<${#ver2[@]}; i++))
+    do
+        ver1[i]=0
+    done
+    for ((i=0; i<${#ver1[@]}; i++))
+    do
+        if [[ -z ${ver2[i]} ]]
+        then
+            # fill empty fields in ver2 with zeros
+            ver2[i]=0
+        fi
+        if ((10#${ver1[i]} > 10#${ver2[i]}))
+        then
+            return 1
+        fi
+        if ((10#${ver1[i]} < 10#${ver2[i]}))
+        then
+            return 2
+        fi
+    done
+    return 0
+}
+
+INSTALLED_VERSION=`/usr/bin/python <<END
+import plistlib
+import os
+import glob
+
+pl = plistlib.readPlist(os.path.join("${APP_DIRECTORY}", "Contents/Info.plist"))
+print pl["CFBundleShortVersionString"]
+END`
+
+echo "Current Version: ${INSTALLED_VERSION}"
+
+vercomp ${TARGET_VERSION} ${INSTALLED_VERSION}
+COMP=$? # 0 means the same, 1 means TARGET is newer, 2 means INSTALLED is newer
+echo "COMPARISON: ${COMP}"
+
+if [ "${COMP}" -eq 1 ]
+then
+    echo "Installed version is older than ${TARGET_VERSION}."
+    echo "Prompting ${curUser} to close Google Chrome."
+
+    CLOSE_CHROME="$(sudo launchctl asuser $curUser /usr/bin/osascript -e 'Tell current application to display dialog "Your Google Chrome is outdated and must be Updated to version '$TARGET_VERSION'. Click Update Now to close Google Chrome and get its latest release." with title "Google Chrome Update" with text buttons {"Update Now", "Tomorrow"} default button "Update Now"')"
+
+    if [ "$CLOSE_CHROME" = "button returned:Update Now" ]; then
+      if pgrep "$APP_PROCESS_NAME" &>/dev/null; then
+        killall "Google Chrome"
+        printf "Installing $APP_PROCESS_NAME version %s" "$TARGET_VERSION"
+        ditto -rsrc "$DMG_VOLUME_PATH/$APP_NAME" "$APP_PATH"
+        chown -R "$APP_PERMISSION_USER":"$APP_PERMISSION_GROUP" "$APP_PATH"
+        hdiutil detach -quiet "$DMG_PATH"
+        rm "$DMG_PATH"
+        echo "Google Chrome installed successfully at version ${TARGET_VERSION}"
+        sudo launchctl asuser $curUser /usr/bin/osascript -e 'Tell current application to display dialog "Your Google Chrome has been successfully updated to version '$TARGET_VERSION'." with title "Success!" with text buttons {"OK"} default button "OK"'
+        exit 0
+      else
+          echo "Scheduled for the next day."
+          exit 1
+      fi
+    fi
+else
+    echo "Installed version is the same or newer than the ${TARGET_VERSION}."
+    hdiutil detach -quiet "$DMG_PATH"
+    rm "$DMG_PATH"
+    exit 1
+fi

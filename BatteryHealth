@@ -1,5 +1,7 @@
 #!/bin/sh
 
+#Checks for Battery Health and Cycles
+
 Health=$(system_profiler SPPowerDataType | grep "Condition" | awk '{print $2}')
 Cicles=$(system_profiler SPPowerDataType | grep "Cycle Count")
 Condition=$(system_profiler SPPowerDataType | grep "Condition")

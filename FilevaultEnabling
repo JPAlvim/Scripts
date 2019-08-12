@@ -1,0 +1,65 @@
+#!/bin/sh
+
+#  Enable User For FileVault.sh
+#
+#  Created by Dennis Nardi on 2/20/18.
+#  Customized by José Paulo on 4/10/18.
+
+##Setting the variables
+
+curUser=$(/usr/bin/stat -f%Su /dev/console)
+
+adminUser=admin
+adminPass=admin_pass
+
+
+
+echo "Enter the username for the Secure Token Enabled Administrator user:"
+read $adminUser
+echo "Enter the password for the Secure Token Enabled Administrator user:"
+read $adminPass
+
+##Enabling Secure Token for the admin user account
+
+sudo sysadminctl -secureTokenOn $adminUser -password $adminPass -adminUser $adminUser -adminPassword $adminPass
+
+## Get the desired user's password
+echo "Prompting ${curUser} for the password for desired user to enable for FV2."
+NewuserPass="$(sudo launchctl asuser $curUser /usr/bin/osascript -e 'Tell current application to display dialog "In order to activate your FileVault, we need you to type in your password in this text box." default answer "" with title "FV2 Enabling" with text buttons {"Ok"} default button 1 with hidden answer' -e 'text returned of result')"
+
+## Sets new user with a secure token so it can be enabled for FV2. This requires GUI authentication from the local account but can be run from any account as if secure token admin credentials are entered
+sudo sysadminctl -secureTokenOn $curUser -password $NewuserPass -adminUser $adminUser -adminPassword $adminPass
+
+## This "expect" activates FileVault. If it is set on Profile Manager to Escrow the key, it will.
+expect -c "
+log_user 0
+spawn sudo fdesetup enable
+expect \"Password:\"
+send "$adminPass"\r
+expect \"Enter the user name:\"
+send "${curUser}"\r
+expect \"Enter the password for user '${curUser}':\"
+send "${NewuserPass}"\r
+log_user 1
+expect eof
+"
+
+## This "expect" block will populate answers for the fdesetup prompts that normally occur while hiding them from output
+expect -c "
+log_user 0
+spawn fdesetup add -usertoadd $Newuser
+expect \"Enter the user name:\"
+send "${curUser}"\r
+expect \"Enter the password for user '${curUser}':\"
+send "${NewuserPass}"\r
+expect \"Enter the password for the added user '$Newuser':\"
+send "${NewuserPass}"\r
+log_user 1
+expect eof
+"
+
+echo -e "\033[1;93mSecure Token Status\033[1;92m\n"
+sudo sysadminctl -secureTokenStatus $adminUser -adminUser $adminUser -adminPassword $adminPass
+sudo sysadminctl -secureTokenStatus $curUser -adminUser $adminUser -adminPassword $adminPass
+
+echo -e "\n\033[1;93mExiting \033[0m"

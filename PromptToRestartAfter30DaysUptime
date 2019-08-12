@@ -1,0 +1,15 @@
+#!/bin/bash
+
+echo "Prompting user to restart computer."
+
+curUser=$(/usr/bin/stat -f%Su /dev/console)
+UPTIME=$(uptime | grep -ohe 'up .*' | sed 's/,//g' | awk '{ print $2" " }')
+RESTART="$(sudo launchctl asuser $curUser /usr/bin/osascript -e 'Tell current application to display dialog "Your system has been on running '$UPTIME' days straight. A system running for more than 30 days may present issues such as low performance and system errors. We recommend that you restart your computer so the system can clean its cache and work better for you!" with title "30 Days Uptime" with text buttons {"Restart Now", "Restart Later"}')"
+
+if [ "$RESTART" = "button returned:Restart Now" ]; then
+  sudo shutdown -r now
+  exit 0
+else
+  sudo launchctl asuser $curUser /usr/bin/osascript -e 'Tell current application to display dialog "Ok. We will ask again later!" with title "Thankyou!" with text buttons {"OK"} default button "OK"'
+  exit 1
+fi

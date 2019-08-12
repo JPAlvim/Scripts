@@ -1,0 +1,29 @@
+#!/bin/bash
+
+##This script prompts the user to input its password and enables the user on Filevault2 tables, so it can unlock the computer.
+
+curUser=$(/usr/bin/stat -f%Su /dev/console)
+
+#Enter the admin user and password on the following variables:
+adminUser=
+adminPassword=
+
+##Don't change the following lines!
+userName="$(/usr/bin/osascript -e 'Tell application "Finder" to display dialog "Please enter your USER NAME in order to enable your user for FileVault2:" default answer "username" with title "Password" with text buttons {"Ok"} default button 1 ' -e 'text returned of result')"
+
+userPassword="$(/usr/bin/osascript -e 'Tell application "Finder" to display dialog "Please enter your USER PASSWORD in order to enable your user for FileVault2:" default answer "password" with title "Password" with hidden answer with text buttons {"Ok"} default button 1 ' -e 'text returned of result')"
+
+expect -c "
+log_user 0
+spawn fdesetup add -usertoadd $userName
+expect \"Enter the user name:\"
+send "${adminUser}"\r
+expect \"Enter the password for user '${adminUser}':\"
+send "${adminPassword}"\r
+expect \"Enter the password for the added user '$userName':\"
+send "${userPassword}"\r
+log_user 1
+expect eof
+"
+
+/usr/bin/osascript -e 'Tell application "Finder" to display dialog "Thankyou!" with title "Success" with hidden answer with text buttons {"Ok"} default button 1 '
