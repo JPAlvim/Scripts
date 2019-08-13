@@ -29,7 +29,7 @@ if [ ! -d "${APP_DIRECTORY}" ]; then
     exit 0
 fi
 
-## No idea what this does.
+## This section creates a comparison between $1 and $2, whose values will be set later.
 
 vercomp () {
     if [[ $1 == $2 ]]
