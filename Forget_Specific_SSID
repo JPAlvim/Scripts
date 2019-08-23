@@ -1,0 +1,22 @@
+#!/bin/bash
+
+## By José Paulo and Lucas Silva, from MacSolution. August 13th 2019.
+
+## Grabs the SSID until the 5th row and records into SSID variable
+SSID=$(/Sy*/L*/Priv*/Apple8*/V*/C*/R*/airport -I | grep SSID | grep -v BSSID | awk '{print $2,$3,$4,$5}')
+
+## Checks if SSID is equal the one to be removed and, if it is, removes it from the configurations
+if [ $SSID = "XXX" -o $SSID = "XXX_2" -o $SSID = "XXX_3" ]; then
+
+networksetup -removepreferredwirelessnetwork en0 $SSID
+networksetup -setnetworkserviceenabled Wi-Fi off
+networksetup -setnetworkserviceenabled Wi-Fi on
+unset SSID
+
+exit 0
+
+else
+
+exit 1
+
+fi

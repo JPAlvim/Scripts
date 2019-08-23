@@ -1,10 +1,6 @@
 #!/bin/sh
 
-#  Enable User For FileVault.sh
-#
-#
-#  Created by Dennis Nardi on 2/20/18.
-#
+## by José Paulo - https://github.com/JPAlvim
 
 curUser=$(/usr/bin/stat -f%Su /dev/console)
 curPass=$password for admin account with secure token

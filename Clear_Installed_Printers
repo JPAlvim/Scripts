@@ -1,5 +1,7 @@
 #!/bin/bash
 
+## by José Paulo - https://github.com/JPAlvim
+
 #Printer Remove
 
 for printer in `lpstat -p | awk '{print $2}'`

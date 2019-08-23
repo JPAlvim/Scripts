@@ -1,10 +1,12 @@
 #!/bin/sh
 
+## by José Paulo - https://github.com/JPAlvim
+
 ## Edit the variables accordingly
 
-Organization="99"
-Repo="Chile"
-BusinessUnit="Santiago"
+Organization=CUSTOMER
+Repo=REPOSITORY
+BusinessUnit=BUSINESS_UNIT
 
 sudo defaults write /Library/Preferences/ManagedInstalls SoftwareRepoURL "http://mdm.seedstore.io/$Organization/$Repo/"
 sudo defaults write /Library/Preferences/ManagedInstalls PackageURL "http://mdm.seedstore.io/repo/$Organization/$Repo/pkgs"

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+## by José Paulo - https://github.com/JPAlvim
+
 ### Script to remove all Microsoft Office 2016 file from local computer. Script will force quit running Microsoft Applications
 #####
 

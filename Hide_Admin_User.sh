@@ -1,5 +1,7 @@
 #!/bin/bash
 
+## by José Paulo - https://github.com/JPAlvim
+
 #Switches admin user status to "Hidden" and changes its home folder to /var.
 
 sudo dscl . create /Users/admin IsHidden 1

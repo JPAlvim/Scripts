@@ -1,9 +1,9 @@
 #!/bin/sh
 
-#  Enable User For FileVault.sh
-#
-#  Created by Dennis Nardi on 2/20/18.
-#  Customized by José Paulo on 4/10/18.
+##  Enable User For FileVault.sh
+##
+##  Created by Dennis Nardi on 2/20/18.
+##  Customized by José Paulo on 4/10/18 - https://github.com/JPAlvim.
 
 ##Setting the variables
 

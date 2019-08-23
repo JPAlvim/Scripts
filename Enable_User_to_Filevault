@@ -1,5 +1,7 @@
 #!/bin/bash
 
+## by José Paulo - https://github.com/JPAlvim
+
 ##This script prompts the user to input its password and enables the user on Filevault2 tables, so it can unlock the computer.
 
 curUser=$(/usr/bin/stat -f%Su /dev/console)

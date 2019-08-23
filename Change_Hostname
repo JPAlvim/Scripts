@@ -1,5 +1,7 @@
 #!/bin/bash
 
+## by José Paulo - https://github.com/JPAlvim
+
 Host_Name=HOSTNAME
 
 sudo scutil --set HostName $Host_Name

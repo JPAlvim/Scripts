@@ -1,5 +1,7 @@
 #!/bin/sh
 
+## by José Paulo - https://github.com/JPAlvim
+
 #This simple script removes the admin permission from the logged user.
 curUser=$(/usr/bin/stat -f%Su /dev/console)
 

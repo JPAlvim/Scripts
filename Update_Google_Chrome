@@ -1,5 +1,7 @@
 #!/bin/bash
 
+## by José Paulo - https://github.com/JPAlvim
+
 ## Setting variables.
 
 curUser=$(/usr/bin/stat -f%Su /dev/console)

@@ -1,12 +1,14 @@
 #!/bin/bash
 
+## by José Paulo - https://github.com/JPAlvim
+
 # If you're changing an existing password, fill the variables as asked. If you're entering a firmware password for the first time, use only "new_password".
 
 Password=DesiredPassword
 
 Firmware=$(sudo firmwarepasswd -check | grep "Password Enabled" | awk '{print $3}')
 
-if [ "$Firmware" == "Yes" ];
+if [ "$Firmware" == "Yes" ]
   then
     echo "Firmware previously enabled"
     exit 0
@@ -28,3 +30,10 @@ if [ "$Firmware" == "Yes" ];
     echo 'Firmware Password Created'
     exit 0
 fi
+
+
+
+
+
+If it's possible, one of our employees doesn't have a VISA. Can you send us a Letter Invitation to try to get VISA easily?
+​
