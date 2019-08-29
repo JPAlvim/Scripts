@@ -1,0 +1,7 @@
+#!/bin/zsh
+
+## by José Paulo - https://github.com/JPAlvim
+
+## The following line greps for the name of every installed profile using system_profiler
+
+system_profiler SPConfigurationProfileDataType | grep "Name:" | sort -u
